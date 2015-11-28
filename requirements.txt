@@ -1,0 +1,5 @@
+# These requirements are for DEVELOPMENT ONLY!
+# You do not need e.g. Sphinx or Fudge just to run the 'fab' tool.
+# Instead, these are necessary for executing the test suite or developing the
+# cutting edge (which may have different requirements from released versions.)
+-r dev-requirements.txt
