@@ -111,7 +111,8 @@ def copy_code(deployment_config, source_dir='src', **additional_files):
                                 user=deployment_config['user'])
 
     for source, dest in additional_files.iteritems():
-        if dest is not '.':
+        if dest != '.':
+            print('Attempting to copy {} to {}'.format(source, dest))
             raise NotImplementedError('Need to implement moving additional '
                                       'files somewhere other than the '
                                       'deployment directory')

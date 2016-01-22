@@ -11,7 +11,7 @@ import os
 __all__ = ['Generator']
 
 TEMPLATES = {
-    'fabric': open(os.path.join(os.path.abspath(os.path.dirname(__file__)), '_templates/fabfile.py'), 'r').read()
+    'fabric': open(os.path.join(os.path.abspath(os.path.dirname(__file__)), '_templates/fabfile.tpl'), 'r').read()
 }
 
 class Generator(object):

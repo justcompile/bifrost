@@ -11,8 +11,11 @@ from __future__ import (
 import aaargh
 import argparse
 from bifrost.generator import Generator
+from bifrost.version import __version__
 
 app = aaargh.App(description="Bifrost is a simple, Pythonic tool for deployment and verifying Docker images.")
+app.arg('-v', '--version', action='version',
+        version='%(prog)s {version}'.format(version=__version__))
 
 @app.cmd(alias=['gen'])
 @app.cmd_arg('-n', '--name', default='fabfile.py', help='Name of the file to generate')
@@ -34,19 +37,6 @@ def deploy(name, args):
     cmd.extend(args)
 
     print(' '.join(cmd))
-
-
-@app.cmd(name="hi", help="Say hi")  # override subcommand name
-@app.cmd_arg('-r', '--repeat', type=int, default=1, help="How many times?")
-def say_hi(name, repeat):  # both application and subcommand args
-    for i in range(repeat):
-        print("Hi, %s!" % name)
-
-
-@app.cmd
-@app.cmd_defaults(name="my friend")  # overrides "visitor" for this command only
-def greetings(name):
-    print("Greetings, %s." % name)
 
 
 def main():
