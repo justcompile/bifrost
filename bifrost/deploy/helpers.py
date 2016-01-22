@@ -1,3 +1,7 @@
+from __future__ import (
+    print_function,
+    unicode_literals
+)
 from datetime import datetime
 import os
 from fabric.api import run, sudo
@@ -34,7 +38,7 @@ def generate_fabric_roles(config):
         ips = aws.get_instances(instance_attr='private_ip_address',
                                 filter=filters)
 
-        roles[role_name] = [u'ubuntu@{}'.format(ip) for ip in ips]
+        roles[role_name] = ['ubuntu@{}'.format(ip) for ip in ips]
 
     return roles
 
