@@ -21,16 +21,17 @@ To find out what's new in this version of Bifrost, please see `the changelog`_.
 For more information, please see the Bifrost website or execute ``fab --help``.
 """ % (readme)
 
-if sys.version_info[:2] < (2, 6):
-    install_requires=['paramiko>=1.10,<1.13']
-else:
-    install_requires=['paramiko>=1.10']
+
+with open('requirements.txt') as f:
+    install_requires = []
+    for line in f.read().splitlines():
+        install_requires.append(line)
 
 
 setup(
-    name='Fabric',
+    name='Bifrost',
     version=get_version('short'),
-    description='Bifrost is a simple, Pythonic tool for enforcing Docker images.',
+    description='Bifrost is a simple, Pythonic tool for deployment and verifying Docker images.',
     long_description=long_description,
     author='Richard Hayes',
     author_email='rich@justcompile.it',
