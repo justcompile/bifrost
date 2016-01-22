@@ -1,9 +1,9 @@
 import os
-import unittest
+from base_test_case import BaseTestCase
 from bifrost.main import generate_fab_file
 
 
-class GeneratorTestCase(unittest.TestCase):
+class GeneratorTestCase(BaseTestCase):
     file_name = 'test.fab'
 
     def tearDown(self):

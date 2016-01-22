@@ -10,7 +10,7 @@ from __future__ import (
 )
 import aaargh
 import argparse
-from generator import Generator
+from bifrost.generator import Generator
 
 app = aaargh.App(description="Bifrost is a simple, Pythonic tool for deployment and verifying Docker images.")
 

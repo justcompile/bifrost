@@ -12,8 +12,6 @@ def get_ssh_gateway(config):
         ips = aws.get_instances(instance_attr='ip_address',
                                 filter={'tag:role': 'nat'})
 
-        print ips
-
         assert len(ips) is 1, "You seem to have too many NAT boxes"
         gateways[region] = 'ec2-user@{}'.format(ips[0])
 
