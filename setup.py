@@ -22,7 +22,7 @@ For more information, please see the Bifrost website or execute ``fab --help``.
 """ % (readme)
 
 
-with open('../requirements.txt') as f:
+with open('requirements.txt') as f:
     install_requires = []
     for line in f.read().splitlines():
         install_requires.append(line)
