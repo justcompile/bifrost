@@ -1,11 +1,15 @@
 import unittest
-from unittest.util import safe_repr
 
 
 class BaseTestCase(unittest.TestCase):
     def assertIn(self, member, container, msg=None):
-        """Just like self.assertTrue(a in b), but with a nicer default message."""
-        if member not in container:
-            standardMsg = '%s not found in %s' % (safe_repr(member),
-                                                  safe_repr(container))
-            self.fail(self._formatMessage(msg, standardMsg))
+        print "OMG DO SOMETHING"
+        if hasattr(unittest.TestCase, 'assertIn') and callable(getattr(unittest.TestCase, 'assertIn', None)):
+            print 'Calling super'
+            super(BaseTestCase, self).assertIn(member, container, msg)
+        else:
+            print 'meh'
+            self.assertTrue(member in container,
+                            msg="{item} not found in {iterable}"
+                                 .format(item=member,
+                                         iterable=container))
