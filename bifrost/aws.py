@@ -3,9 +3,9 @@ import boto3
 from botocore.exceptions import ProfileNotFound
 
 
-class ConfigService(object):
+class AWSProfile(object):
     @staticmethod
-    def profile_exists(profile_name):
+    def exists(profile_name):
         try:
             boto3.Session(profile_name=profile_name)
         except ProfileNotFound:
@@ -14,8 +14,8 @@ class ConfigService(object):
         return True
 
     @staticmethod
-    def save_profile(profile_name, access_key_id, access_secret_key):
-        file_name = ConfigService._get_file_path()
+    def save(profile_name, access_key_id, access_secret_key):
+        file_name = AWSProfile._get_file_path()
         lines = [
             '[{}]\n'.format(profile_name),
             'aws_access_key_id = {}\n'.format(access_key_id),

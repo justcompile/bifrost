@@ -18,23 +18,25 @@ class InitTestCase(BaseTestCase):
 
     @fudge.patch('__builtin__.raw_input',
                 'os.path.exists',
-                'bifrost.aws.ConfigService.profile_exists')
+                'bifrost.aws.AWSProfile.exists',
+                'bifrost.generators.Config.load_from_template')
     def test_will_skip_aws_creds_if_profile_exists(self,
                                                     fake_input,
                                                     fake_exists,
-                                                    FakeSession):
+                                                    FakeSession,
+                                                    fake_load_from_tmpl):
         profile_name = '<profile_name>'
         fake_exists.expects_call().returns(False)
         fake_input.expects_call().returns(profile_name)
         FakeSession.expects_call().with_args(profile_name).returns(True)
+        fake_load_from_tmpl.expects_call().returns({})
 
-
-        self.assertRaises(SystemExit, init, self.file_name)
+        init(self.file_name)
 
 
     @fudge.patch('__builtin__.raw_input',
                 'os.path.exists',
-                'bifrost.aws.ConfigService.profile_exists')
+                'bifrost.aws.AWSProfile.exists')
     def test_will_exit_if_profile_doesnt_exist_but_user_enters_no(self,
                                                             fake_input,
                                                             fake_exists,
@@ -49,11 +51,13 @@ class InitTestCase(BaseTestCase):
 
     @fudge.patch('__builtin__.raw_input',
                 'os.path.exists',
-                'bifrost.aws.ConfigService.profile_exists')
+                'bifrost.aws.AWSProfile.exists',
+                'bifrost.generators.Config.load_from_template')
     def test_will_request_aws_creds_if_profile_doesnt_exist(self,
                                                             fake_input,
                                                             fake_exists,
-                                                            FakeSession):
+                                                            FakeSession,
+                                                            fake_load_tmpl):
         profile_name = '<profile_name>'
         key = '<key>'
         secret = '<secret>'
@@ -64,19 +68,22 @@ class InitTestCase(BaseTestCase):
         fake_input.next_call().returns('y')
         fake_input.next_call().returns(key)
         fake_input.next_call().returns(secret)
+        fake_load_tmpl.expects_call().returns({})
 
         init(self.file_name)
 
 
     @fudge.patch('__builtin__.raw_input',
                 'os.path.exists',
-                'bifrost.aws.ConfigService.profile_exists',
-                'bifrost.aws.ConfigService._get_file_path')
+                'bifrost.aws.AWSProfile.exists',
+                'bifrost.aws.AWSProfile._get_file_path',
+                'bifrost.generators.Config.load_from_template')
     def test_will_request_aws_creds_if_profile_doesnt_exist_save_to_file(self,
                                                                         fake_input,
                                                                         fake_exists,
                                                                         fake_profile_exists,
-                                                                        fake_get_file_path):
+                                                                        fake_get_file_path,
+                                                                        fake_load_from_tmpl):
         profile_name = '<profile_name>'
         key = '<key>'
         secret = '<secret>'
@@ -88,6 +95,7 @@ class InitTestCase(BaseTestCase):
         fake_input.next_call().returns(key)
         fake_input.next_call().returns(secret)
         fake_get_file_path.expects_call().returns('my_creds')
+        fake_load_from_tmpl.expects_call().returns({})
 
         init(self.file_name)
 
