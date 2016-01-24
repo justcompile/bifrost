@@ -8,8 +8,11 @@ from __future__ import (
     print_function,
     unicode_literals
 )
+import os
+import sys
 import aaargh
 import argparse
+from bifrost.aws import ConfigService
 from bifrost.generator import Generator
 from bifrost.version import __version__
 
@@ -17,10 +20,30 @@ app = aaargh.App(description="Bifrost is a simple, Pythonic tool for deployment 
 app.arg('-v', '--version', action='version',
         version='%(prog)s {version}'.format(version=__version__))
 
+
+@app.cmd
+@app.cmd_arg('-n', '--name', default='fabfile.py', help='Name of the file to generate')
+def init(name):
+    if os.path.exists(name):
+        print('File already exists, exiting...')
+        sys.exit(1)
+
+    profile_name = raw_input('AWS Profile to use')
+    profile_exists = ConfigService.profile_exists(profile_name)
+
+    should_create_profile = raw_input('Do you want to create this profile? [y/n]')
+    if not should_create_profile.lower() in ['y', 'yes']:
+        sys.exit(1)
+
+    access_key_id = raw_input('AWS Access Key Id:')
+    access_secret_key = raw_input('AWS Secret Access Key:')
+
+    ConfigService.save_profile(profile_name, access_key_id, access_secret_key)
+
+
 @app.cmd(alias=['gen'])
 @app.cmd_arg('-n', '--name', default='fabfile.py', help='Name of the file to generate')
 def generate_fab_file(name):
-    print(name)
     Generator.fabric(name)
 
 

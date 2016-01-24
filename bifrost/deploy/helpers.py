@@ -5,14 +5,14 @@ from __future__ import (
 from datetime import datetime
 import os
 from fabric.api import run, sudo
-from bifrost.aws_service import AWSService
+from bifrost.aws import EC2Service
 
 def get_ssh_gateway(config):
     regions = config['connection'].get('regions')
     aws_profile = config['connection'].get('aws_profile')
     gateways = {}
     for region in regions:
-        aws = AWSService(profile_name=aws_profile, regions=[region])
+        aws = EC2Service(profile_name=aws_profile, regions=[region])
         ips = aws.get_instances(instance_attr='ip_address',
                                 filter={'tag:role': 'nat'})
 
@@ -31,7 +31,7 @@ def generate_fabric_roles(config):
     regions = config['connection'].get('regions')
     aws_profile = config['connection'].get('aws_profile')
 
-    aws = AWSService(profile_name=aws_profile, regions=regions)
+    aws = EC2Service(profile_name=aws_profile, regions=regions)
 
     roles = {}
     for role_name, filters in config['roles'].iteritems():
