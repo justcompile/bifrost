@@ -51,7 +51,7 @@ def init(name):
             config_values['roles'] = {}
             number_of_roles = raw_input('Number required: ')
             for i in range(0, int(number_of_roles)):
-                builder = ConfigBuilder('role {}'.format(i), {'name': '', 'tag-key': 'my-role'})
+                builder = ConfigBuilder('role {0}'.format(i), {'name': '', 'tag-key': 'my-role'})
 
                 values = builder.prompt_user()
                 role_name = values.pop('name')
@@ -77,7 +77,7 @@ def init(name):
 @app.cmd_arg('-n', '--name', default='fabfile.py', help='Name of the file to generate')
 def generate_fab_file(name):
     if os.path.exists(name):
-        overwrite = raw_input("{} already exists in this directory. Do you want to overwrite? [y/n]")
+        overwrite = raw_input("{0} already exists in this directory. Do you want to overwrite? [y/n]")
         if overwrite.lower() in ['n', 'no']:
             sys.exit(0)
     Fabric.save(name)

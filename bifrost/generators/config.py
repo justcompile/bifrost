@@ -59,7 +59,7 @@ class ConfigBuilder(object):
         q.update(kwargs)
 
     def prompt_user(self):
-        print 'Please answer the following questions relating to {}...'.format(self.key)
+        print 'Please answer the following questions relating to {0}...'.format(self.key)
         for key, question in self._questions.iteritems():
             if question.get('skip'):
                 self.values[key] = question['default']
@@ -79,7 +79,7 @@ class ConfigBuilder(object):
 
         if question['required'] and not answer:
             while not answer:
-                print 'Sorry, {} is a required value'.format(question['key'])
+                print 'Sorry, {0} is a required value'.format(question['key'])
                 answer = raw_input(question_string).strip()
 
         if answer and question['is_array']:

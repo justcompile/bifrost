@@ -17,9 +17,9 @@ class AWSProfile(object):
     def save(profile_name, access_key_id, access_secret_key):
         file_name = AWSProfile._get_file_path()
         lines = [
-            '[{}]\n'.format(profile_name),
-            'aws_access_key_id = {}\n'.format(access_key_id),
-            'aws_secret_access_key = {}\n'.format(access_secret_key),
+            '[{0}]\n'.format(profile_name),
+            'aws_access_key_id = {0}\n'.format(access_key_id),
+            'aws_secret_access_key = {0}\n'.format(access_secret_key),
             '\n'
         ]
 

@@ -106,8 +106,8 @@ class InitTestCase(BaseTestCase):
             lines = fp.readlines()
 
         self.assertEqual(len(lines), 4)
-        self.assertEqual(lines[0], '[{}]\n'.format(profile_name))
-        self.assertEqual(lines[1], 'aws_access_key_id = {}\n'.format(key))
-        self.assertEqual(lines[2], 'aws_secret_access_key = {}\n'.format(secret))
+        self.assertEqual(lines[0], '[{0}]\n'.format(profile_name))
+        self.assertEqual(lines[1], 'aws_access_key_id = {0}\n'.format(key))
+        self.assertEqual(lines[2], 'aws_secret_access_key = {0}\n'.format(secret))
 
         os.remove('my_creds')
