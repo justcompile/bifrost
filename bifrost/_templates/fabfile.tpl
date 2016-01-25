@@ -6,8 +6,8 @@ from fabric.operations import local, run
 from bifrost.deploy import helpers
 
 
-def setup():
-    env.config = helpers.load_config()
+def setup(config=None):
+    env.config = helpers.load_config(config)
 
     if env.config['connection'].get('gateway'):
         env.gateway = helpers.get_ssh_gateway(env.config)['eu-west-1']

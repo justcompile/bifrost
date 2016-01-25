@@ -81,16 +81,17 @@ def init(name):
 
 
 @app.cmd
-@app.cmd_arg('-n', '--name', default='fabfile.py', help='Name of the file to pull from')
+@app.cmd_arg('-n', '--name', default='bifrost.cfg', help='Name of the config file load')
 @app.cmd_arg('args', nargs=argparse.REMAINDER)
 def deploy(name, args):
     print("Generating fab deploy command...")
     cmd = ['fab']
-    if name is not 'fabfile.py':
-        cmd.extend(['-f', name])
+    cmd.append('setup:config={0}'.format(name))
 
-    cmd.append('setup')
-    cmd.extend(args)
+    if args:
+        cmd.extend(args)
+    else:
+        cmd.append('deploy:branch=default')
 
     print(' '.join(cmd))
 

@@ -6,6 +6,11 @@ from datetime import datetime
 import os
 from fabric.api import run, sudo
 from bifrost.aws import EC2Service
+from bifrost.generators import Config
+
+
+def load_config(file_name=None):
+    return Config.load(file_name)
 
 def get_ssh_gateway(config):
     regions = config['connection'].get('regions')
@@ -13,7 +18,7 @@ def get_ssh_gateway(config):
     gateways = {}
     for region in regions:
         aws = EC2Service(profile_name=aws_profile, regions=[region])
-        ips = aws.get_instances(instance_attr='ip_address',
+        ips = aws.get_instances(instance_attr='public_ip_address',
                                 filter={'tag:role': 'nat'})
 
         assert len(ips) is 1, "You seem to have too many NAT boxes"
