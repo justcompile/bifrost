@@ -17,13 +17,15 @@ from bifrost.generators import Config, Fabric
 from bifrost.generators.config import ConfigBuilder
 from bifrost.version import __version__
 
+FABRIC_FILE_NAME = 'fabfile.py'
+
 app = aaargh.App(description="Bifrost is a simple, Pythonic tool for deployment and verifying Docker images.")
 app.arg('-v', '--version', action='version',
         version='%(prog)s {version}'.format(version=__version__))
 
 
 @app.cmd
-@app.cmd_arg('-n', '--name', default='fabfile.py', help='Name of the file to generate')
+@app.cmd_arg('-n', '--name', default='bifrost.cfg', help='Name of the config file to generate')
 def init(name):
     if os.path.exists(name):
         print('File already exists, exiting...')
@@ -66,21 +68,16 @@ def init(name):
                 builder.change_question('venv',required=False)
 
             config_values[key] = builder.prompt_user()
+            if key == 'repository':
+                config_values[key] = config_values[key][key]
 
     if (config_values):
-        Config.save(**config_values)
-        Fabric.save(name)
+        Config.save(name=name, **config_values)
+        if not os.path.exists(FABRIC_FILE_NAME):
+            Fabric.save(FABRIC_FILE_NAME,
+                        roles=list(config_values['roles'].iterkeys()))
     else:
         print('No configuration loaded')
-
-@app.cmd(alias=['gen'])
-@app.cmd_arg('-n', '--name', default='fabfile.py', help='Name of the file to generate')
-def generate_fab_file(name):
-    if os.path.exists(name):
-        overwrite = raw_input("{0} already exists in this directory. Do you want to overwrite? [y/n]")
-        if overwrite.lower() in ['n', 'no']:
-            sys.exit(0)
-    Fabric.save(name)
 
 
 @app.cmd

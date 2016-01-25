@@ -27,6 +27,10 @@ class Config(object):
 
         tmpl_data['connection'].update(connection)
         tmpl_data['deployment'].update(deployment)
+        if repository:
+            tmpl_data['repository'] = repository
+
+        tmpl_data['roles'].update(roles)
 
         with(open(name, 'w')) as fp:
             fp.write(yaml.dump(tmpl_data))

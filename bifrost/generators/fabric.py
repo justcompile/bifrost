@@ -2,6 +2,7 @@ from __future__ import (
     unicode_literals
 )
 import os
+from jinja2 import Template
 
 
 class Fabric(object):
@@ -14,8 +15,8 @@ class Fabric(object):
             return fp.read()
 
     @staticmethod
-    def save(name='fabfile.py'):
-        tmpl_data = Fabric.load_from_template()
+    def save(name='fabfile.py', **kwargs):
+        template = Template(Fabric.load_from_template())
 
         with(open(name, 'w')) as fp:
-            fp.write(tmpl_data)
+            fp.write(template.render(**kwargs))

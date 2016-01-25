@@ -1,6 +1,6 @@
 import os
 from base_test_case import BaseTestCase
-from bifrost.main import generate_fab_file
+from bifrost.generators import Fabric
 
 
 class GeneratorTestCase(BaseTestCase):
@@ -11,25 +11,25 @@ class GeneratorTestCase(BaseTestCase):
             os.remove(self.file_name)
 
     def test_can_generate_placeholder_fab_file(self):
-        generate_fab_file(self.file_name)
+        Fabric.save(self.file_name)
         self.assertTrue(os.path.exists(self.file_name))
 
     def test_can_generate_fab_file_with_deploy_task(self):
-        generate_fab_file(self.file_name)
+        Fabric.save(self.file_name)
 
         signature = "def deploy(branch, install_pkgs=False):"
 
         self.assertIn(signature, self.__read_file())
 
     def test_can_generate_fab_file_with_deploy_role1_task(self):
-        generate_fab_file(self.file_name)
+        Fabric.save(self.file_name, roles=['role1'])
 
         signature = "@roles('role1')\ndef deploy_role1(branch, install_pkgs=False):"
 
         self.assertIn(signature, self.__read_file())
 
     def test_can_generate_fab_file_with_deploy_role2_task(self):
-        generate_fab_file(self.file_name)
+        Fabric.save(self.file_name, roles=['role2'])
 
         signature = "@roles('role2')\ndef deploy_role2(branch, install_pkgs=False):"
 
