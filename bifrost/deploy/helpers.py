@@ -5,19 +5,24 @@ from __future__ import (
 from datetime import datetime
 import os
 from fabric.api import run, sudo
-from bifrost.aws_service import AWSService
+from bifrost.aws import EC2Service
+from bifrost.generators import Config
+
+
+def load_config(file_name=None):
+    return Config.load(file_name)
 
 def get_ssh_gateway(config):
     regions = config['connection'].get('regions')
     aws_profile = config['connection'].get('aws_profile')
     gateways = {}
     for region in regions:
-        aws = AWSService(profile_name=aws_profile, regions=[region])
-        ips = aws.get_instances(instance_attr='ip_address',
+        aws = EC2Service(profile_name=aws_profile, regions=[region])
+        ips = aws.get_instances(instance_attr='public_ip_address',
                                 filter={'tag:role': 'nat'})
 
         assert len(ips) is 1, "You seem to have too many NAT boxes"
-        gateways[region] = 'ec2-user@{}'.format(ips[0])
+        gateways[region] = 'ec2-user@{0}'.format(ips[0])
 
     return gateways
 
@@ -31,14 +36,14 @@ def generate_fabric_roles(config):
     regions = config['connection'].get('regions')
     aws_profile = config['connection'].get('aws_profile')
 
-    aws = AWSService(profile_name=aws_profile, regions=regions)
+    aws = EC2Service(profile_name=aws_profile, regions=regions)
 
     roles = {}
     for role_name, filters in config['roles'].iteritems():
         ips = aws.get_instances(instance_attr='private_ip_address',
                                 filter=filters)
 
-        roles[role_name] = ['ubuntu@{}'.format(ip) for ip in ips]
+        roles[role_name] = ['ubuntu@{0}'.format(ip) for ip in ips]
 
     return roles
 
@@ -56,7 +61,7 @@ def backup(key, deployment_config):
     Runs backup of existing code base
     """
     backup_name = deployment_config['base_dir'].replace('/', '_')
-    backup_dir = os.path.join('/var/backups', '{}-{}'.format(key, backup_name))
+    backup_dir = os.path.join('/var/backups', '{0}-{1}'.format(key, backup_name))
 
     deployment_dir = os.path.join(deployment_config['base_dir'],
                                   deployment_config['code_dir'])
@@ -80,7 +85,7 @@ def checkout_code(branch):
     """
 
     run('hg pull -u')
-    result = run('hg update {}'.format(branch))
+    result = run('hg update {0}'.format(branch))
 
     return result
 
@@ -107,17 +112,17 @@ def copy_code(deployment_config, source_dir='src', **additional_files):
 
     sudo('rm -rf %s/*' % deployment_dir, user=deployment_config['user'])
 
-    sudo('cp -r {}/* {}'.format(source_dir, deployment_dir),
+    sudo('cp -r {0}/* {1}'.format(source_dir, deployment_dir),
                                 user=deployment_config['user'])
 
     for source, dest in additional_files.iteritems():
         if dest != '.':
-            print('Attempting to copy {} to {}'.format(source, dest))
+            print('Attempting to copy {0} to {1}'.format(source, dest))
             raise NotImplementedError('Need to implement moving additional '
                                       'files somewhere other than the '
                                       'deployment directory')
 
-        sudo('cp -r {} {}'.format(source, deployment_dir),
+        sudo('cp -r {0} {1}'.format(source, deployment_dir),
              user=deployment_config['user'])
 
 
@@ -125,5 +130,5 @@ def install_pkgs(deployment_config):
     pip_binary = os.path.join(deployment_config['base_dir'],
                               deployment_config['venv'], 'bin/pip')
 
-    sudo('{} install -r requirements.txt'.format(pip_binary),
+    sudo('{0} install -r requirements.txt'.format(pip_binary),
          user=deployment_config['user'])
