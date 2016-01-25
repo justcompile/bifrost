@@ -37,7 +37,7 @@ setup(
     author_email='rich@justcompile.it',
     url='http://justcompile.it',
     packages=find_packages(),
-    package_data={'bifrost': '_templates/*.tpl'},
+    package_data={'bifrost': ['_templates/*.tpl']},
     test_suite='nose.collector',
     tests_require=['nose', 'fudge<1.0', 'jinja2'],
     install_requires=install_requires,
