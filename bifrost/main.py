@@ -12,9 +12,10 @@ import os
 import sys
 import aaargh
 import argparse
+import subprocess
 from bifrost.aws import AWSProfile
 from bifrost.generators import Config, Fabric
-from bifrost.generators.config import ConfigBuilder
+from bifrost.helpers.console import ConfigBuilder, query_yes_no
 from bifrost.version import __version__
 
 FABRIC_FILE_NAME = 'fabfile.py'
@@ -35,8 +36,8 @@ def init(name):
     profile_exists = AWSProfile.exists(profile_name)
 
     if not profile_exists:
-        should_create_profile = raw_input('Do you want to create this profile? [y/n]: ')
-        if not should_create_profile.lower() in ['y', 'yes']:
+        should_create_profile = query_yes_no('Do you want to create this profile?: ')
+        if not should_create_profile:
             sys.exit(1)
 
         access_key_id = raw_input('AWS Access Key Id: ')
@@ -93,7 +94,9 @@ def deploy(name, args):
     else:
         cmd.append('deploy:branch=default')
 
-    print(' '.join(cmd))
+    print('Executing: {0}'.format(' '.join(cmd)))
+    if query_yes_no("Do you want to continue?", default="no"):
+        subprocess.call(cmd)
 
 
 def main():
