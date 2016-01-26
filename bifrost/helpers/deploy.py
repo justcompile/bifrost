@@ -13,18 +13,15 @@ def load_config(file_name=None):
     return Config.load(file_name)
 
 def get_ssh_gateway(config):
-    regions = config['connection'].get('regions')
+    region = config['connection'].get('region')
     aws_profile = config['connection'].get('aws_profile')
-    gateways = {}
-    for region in regions:
-        aws = EC2Service(profile_name=aws_profile, regions=[region])
-        ips = aws.get_instances(instance_attr='public_ip_address',
-                                filter={'tag:role': 'nat'})
 
-        assert len(ips) is 1, "You seem to have too many NAT boxes"
-        gateways[region] = 'ec2-user@{0}'.format(ips[0])
+    aws = EC2Service(profile_name=aws_profile, region=region)
+    ips = aws.get_instances(instance_attr='public_ip_address',
+                            filter={'tag:role': 'nat'})
 
-    return gateways
+    assert len(ips) is 1, "You seem to have too many NAT boxes"
+    return 'ec2-user@{0}'.format(ips[0])
 
 
 def generate_fabric_roles(config):
@@ -33,10 +30,10 @@ def generate_fabric_roles(config):
     a dict of connection details for a given list of roles for Fabric to utilise
     """
     assert 'roles' in config, "Config must contain a roles key"
-    regions = config['connection'].get('regions')
+    region = config['connection'].get('region')
     aws_profile = config['connection'].get('aws_profile')
 
-    aws = EC2Service(profile_name=aws_profile, regions=regions)
+    aws = EC2Service(profile_name=aws_profile, region=region)
 
     roles = {}
     for role_name, filters in config['roles'].iteritems():
