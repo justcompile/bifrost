@@ -36,19 +36,17 @@ class AWSProfile(object):
         return os.path.expanduser('~/.aws/credentials')
 
 class EC2Service(object):
-    def __init__(self, profile_name=None, regions=None):
+    def __init__(self, profile_name=None, region=None):
         """ This class helps find instances with a particular set of tags.
 
             If access key/secret are not given, they must be available as environment
             variables so boto can access them.
         """
         # todo get full region list
-        self.regions = regions if regions else ['us-east-1']
+        self.region = region or 'eu-west-1'
         # Open connections to ec2 regions
-        self.conn = {}
         session = boto3.Session(profile_name=profile_name)
-        for region in self.regions:
-            self.conn[region] = session.resource('ec2', region_name=region)
+        self.conn = session.resource('ec2', region_name=self.region)
 
     def get_instances(self, instance_attr='public_dns_name', only_running=True, **kwargs):
         """ Return instances that match the given tags.
@@ -70,14 +68,13 @@ class EC2Service(object):
             filters.append({'Name': key, 'Values': [value]})
 
         hosts = []
-        for region in self.regions:
-            instances = self.conn[region].instances.filter(Filters=filters)
+        instances = self.conn.instances.filter(Filters=filters)
 
-            for instance in instances:
-                instance_value = getattr(instance, instance_attr)
-                if instance_value:
-                    # Terminated/stopped instances will not have a public_dns_name
-                    hosts.append(instance_value)
-                else:
-                    raise ValueError('%s is not an attribute of instance' % instance_attr)
+        for instance in instances:
+            instance_value = getattr(instance, instance_attr)
+            if instance_value:
+                # Terminated/stopped instances will not have a public_dns_name
+                hosts.append(instance_value)
+            else:
+                raise ValueError('%s is not an attribute of instance' % instance_attr)
         return hosts
