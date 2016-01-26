@@ -10,7 +10,7 @@ def setup(config=None):
     env.config = helpers.load_config(config)
 
     if env.config['connection'].get('gateway'):
-        env.gateway = helpers.get_ssh_gateway(env.config)['eu-west-1']
+        env.gateway = helpers.get_ssh_gateway(env.config)
 
     env.roledefs = helpers.generate_fabric_roles(env.config)
     env.key_filename = env.config['connection']['ssh_key']

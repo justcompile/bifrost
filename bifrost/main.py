@@ -62,10 +62,10 @@ def init(name):
             builder = ConfigBuilder(key, components)
             if key == 'connection':
                 builder.change_question('aws_profile', skip=True)
-                builder.change_question('regions', required=False)
             elif key == 'deployment':
-                builder.change_question('code_dir',required=False)
-                builder.change_question('venv',required=False)
+                builder.change_question('base_dir', required=True)
+            elif key == 'repository':
+                builder.change_question('repository', required=True)
 
             config_values[key] = builder.prompt_user()
             if key == 'repository':

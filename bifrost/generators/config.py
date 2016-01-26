@@ -54,7 +54,8 @@ class ConfigBuilder(object):
             self._questions[k] = {
                 'key': k,
                 'default': v,
-                'required': True,
+                'required': False,
+                'is_bool': v in ['True', 'False', True, False],
                 'is_array': isinstance(v, list)
             }
 
@@ -73,11 +74,18 @@ class ConfigBuilder(object):
         return self.values
 
     def _get_answer_for_question(self, question, indent=2):
-        question_string = '{indent}{component} [default: {default}, type: {type}]: '.format(
+        if question['is_bool']:
+            suffix = ' [y/n]'
+        elif question['is_array']:
+            suffix = ' (comma seperated)'
+        else:
+            suffix = ''
+
+        question_string = '{indent}{component}{suffix} [default: {default}]: '.format(
             indent=' '*indent,
             component=question['key'],
-            default=question['default'],
-            type='string' if not question['is_array'] else 'list - seperate by comma'
+            suffix=suffix,
+            default=question['default']
          )
         answer = raw_input(question_string).strip()
 
@@ -88,5 +96,9 @@ class ConfigBuilder(object):
 
         if answer and question['is_array']:
             answer = answer.split(',')
+
+        if answer and question['is_bool']:
+            if not isinstance(answer, bool):
+                answer = answer.lower() in ['y', 'yes']            
 
         return answer or question['default']
