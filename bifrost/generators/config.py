@@ -4,6 +4,7 @@ from __future__ import (
 from copy import deepcopy
 import os
 import yaml
+from bifrost.version import get_version
 
 
 class Config(object):
@@ -21,16 +22,22 @@ class Config(object):
             return yaml.load(fp.read())
 
     @staticmethod
-    def save(name='bifrost.cfg', connection={}, deployment={},
-                                    repository=None, roles={}, **kwargs):
+    def save(name='bifrost.cfg', application_type='undefined', connection={},
+             deployment={}, repository=None, roles={}, **kwargs):
         tmpl_data = deepcopy(Config.load_from_template())
+
+        bifrost_info = tmpl_data.get('bifrost', {})
+        bifrost_info['version'] = get_version('short')
+
+        tmpl_data['bifrost'] = bifrost_info
 
         tmpl_data['connection'].update(connection)
         tmpl_data['deployment'].update(deployment)
         if repository:
             tmpl_data['repository'] = repository
 
-        tmpl_data['roles'].update(roles)
+        tmpl_data['roles'] = roles
+        tmpl_data['application']['type'] = application_type
 
         with(open(name, 'w')) as fp:
             fp.write(yaml.dump(tmpl_data))

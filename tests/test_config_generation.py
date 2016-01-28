@@ -1,6 +1,7 @@
 import os
 from base_test_case import BaseTestCase
 from bifrost.generators import Config
+from bifrost.version import get_version
 
 
 class ConfigGeneratorTestCase(BaseTestCase):
@@ -15,6 +16,9 @@ class ConfigGeneratorTestCase(BaseTestCase):
 
         saved_file = Config.load(self.file_name)
         template = Config.load_from_template()
+        # update with version number
+        template['bifrost']['version'] = get_version('short')
+
         self.assertEqual(saved_file, template)
 
 
