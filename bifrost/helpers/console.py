@@ -66,6 +66,27 @@ class ConfigBuilder(object):
 
         return answer or question['default']
 
+def query_options(question, *options):
+    """Ask a question via raw_input() which requies the user to answer one of a choice of answers and return their answer.
+    "question" is a string that is presented to the user.
+    "options" is the choices the user must pick one of.
+    """
+
+    def parse_options(*args):
+        return [unicode(arg).lower() for arg in args]
+
+    options = parse_options(*options)
+
+    prompt = " ({0})".format('|'.join(options))
+
+    while True:
+        sys.stdout.write('{0}{1}: '.format(question, prompt))
+        choice = raw_input().lower()
+        if choice not in options:
+            sys.stdout.write("Please respond with one of the following: {0}".format('|'.join(options)))
+        else:
+            return choice
+
 
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
