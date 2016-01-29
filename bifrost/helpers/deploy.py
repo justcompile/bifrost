@@ -1,3 +1,6 @@
+"""
+Contains a number of methods to used during the deployment process
+"""
 from __future__ import (
     print_function,
     unicode_literals
@@ -5,6 +8,7 @@ from __future__ import (
 from datetime import datetime
 import os
 from fabric.api import run, sudo
+from fabric.context_managers import cd
 from bifrost.aws import EC2Service
 from bifrost.generators import Config
 
@@ -110,17 +114,19 @@ def convert_to_bool(val, default=False):
 
     try:
         return ast.literal_eval(val.title())
-    except:
+    except ValueError:
         return default
 
-def copy_code(deployment_config, source_dir='src', **additional_files):
+def copy_code(deployment_config, source_dir='src', delete_dest_contents=True,
+              **additional_files):
     """
     Removes the old code base before copying the new one across
     """
     deployment_dir = os.path.join(deployment_config['base_dir'],
-                                  deployment_config['code_dir'])
+                                  deployment_config['code_dir'].strip())
 
-    sudo('rm -rf %s/*' % deployment_dir, user=deployment_config['user'])
+    if delete_dest_contents:
+        sudo('rm -rf %s/*' % deployment_dir, user=deployment_config['user'])
     sudo('cp -r {0}/* {1}'.format(source_dir, deployment_dir),
          user=deployment_config['user'])
 
@@ -151,7 +157,8 @@ def install_pkgs(config):
         raise Exception('{0} is not a supported application type'.format(app_type))
 
 
-def _install_python_packages(deployment_config, requirements_file='requirements.txt'):
+def _install_python_packages(deployment_config,
+                             requirements_file='requirements.txt'):
     """
     Will install python requirements using `pip`.
     """
@@ -166,4 +173,8 @@ def _install_node_packages(deployment_config):
     """
     Installs Node.js packages via `npm`
     """
-    sudo('npm install', user=deployment_config['user'])
+    code_dir = os.path.join(deployment_config['base_dir'],
+                            deployment_config['code_dir'].strip())
+
+    with cd(code_dir):
+        sudo('npm install', user=deployment_config['user'])

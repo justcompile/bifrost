@@ -51,6 +51,8 @@ def init(name):
     config_template = Config.load_from_template()
 
     for key, components in config_template.iteritems():
+        if key in ['bifrost', 'application']:
+            continue
         if key == 'roles':
             print('Roles...')
             config_values['roles'] = {}
