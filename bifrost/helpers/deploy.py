@@ -143,22 +143,23 @@ def copy_code(deployment_config, source_dir='src', delete_dest_contents=True,
                                    deployment_dir))
 
 
-def install_pkgs(config):
+def install_pkgs(config, **kwargs):
     """
     Installs the Project's packages
     """
     deployment_config = config['deployment']
     app_type = config['application']['type']
     if app_type == 'python':
-        _install_python_packages(deployment_config)
+        _install_python_packages(deployment_config, **kwargs)
     elif app_type == 'javascript':
-        _install_node_packages(deployment_config)
+        _install_node_packages(deployment_config, **kwargs)
     else:
         raise Exception('{0} is not a supported application type'.format(app_type))
 
 
 def _install_python_packages(deployment_config,
-                             requirements_file='requirements.txt'):
+                             requirements_file='requirements.txt',
+                             **kwargs):
     """
     Will install python requirements using `pip`.
     """
@@ -169,12 +170,16 @@ def _install_python_packages(deployment_config,
          user=deployment_config['user'])
 
 
-def _install_node_packages(deployment_config):
+def _install_node_packages(deployment_config, **kwargs):
     """
     Installs Node.js packages via `npm`
     """
     code_dir = os.path.join(deployment_config['base_dir'],
                             deployment_config['code_dir'].strip())
 
+    command = 'npm install'
+    if 'home_env' in kwargs:
+        command = 'HOME={0} {1}'.format(kwargs['home_env'], command)
+
     with cd(code_dir):
-        sudo('npm install', user=deployment_config['user'])
+        sudo(command, user=deployment_config['user'])
