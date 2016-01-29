@@ -131,11 +131,10 @@ def copy_code(deployment_config, source_dir='src', **additional_files):
                                       'files somewhere other than the '
                                       'deployment directory')
 
-        sudo('cp -r {0} {1}'.format(source, deployment_dir),
-             user=deployment_config['user'])
+        sudo('cp -r {0} {1}'.format(source, deployment_dir))
 
     sudo('chown {0} -R {1}'.format(deployment_config['user'],
-                                   deployment_config['base_dir']))
+                                   deployment_dir))
 
 
 def install_pkgs(config):
