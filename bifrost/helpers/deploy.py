@@ -10,9 +10,15 @@ from bifrost.generators import Config
 
 
 def load_config(file_name=None):
+    """
+    Loads Bifrost configuration file for project
+    """
     return Config.load(file_name)
 
 def get_ssh_gateway(config):
+    """
+    Returns the SSH gateway for a project based on the AWS Region
+    """
     region = config['connection'].get('region')
     aws_profile = config['connection'].get('aws_profile')
 
@@ -46,6 +52,9 @@ def generate_fabric_roles(config):
 
 
 def list_files(directory):
+    """
+    Generates a list of filenames for a given directory
+    """
     string_ = run("for i in %s/*; do echo $i; done" % directory)
     files = string_.replace("\r", "").split("\n")
     if len(files) == 1 and files[0].endswith('/*'):
@@ -87,6 +96,10 @@ def checkout_code(branch):
     return result
 
 def convert_to_bool(val, default=False):
+    """
+    Converts a value to it's boolean representation, used for parsing
+    command line arguements
+    """
     import ast
 
     if isinstance(val, bool):
@@ -108,9 +121,8 @@ def copy_code(deployment_config, source_dir='src', **additional_files):
                                   deployment_config['code_dir'])
 
     sudo('rm -rf %s/*' % deployment_dir, user=deployment_config['user'])
-
     sudo('cp -r {0}/* {1}'.format(source_dir, deployment_dir),
-                                user=deployment_config['user'])
+         user=deployment_config['user'])
 
     for source, dest in additional_files.iteritems():
         if dest != '.':
@@ -122,10 +134,37 @@ def copy_code(deployment_config, source_dir='src', **additional_files):
         sudo('cp -r {0} {1}'.format(source, deployment_dir),
              user=deployment_config['user'])
 
+    sudo('chown {0} -R {1}'.format(deployment_config['user'],
+                                   deployment_config['base_dir']))
 
-def install_pkgs(deployment_config):
+
+def install_pkgs(config):
+    """
+    Installs the Project's packages
+    """
+    deployment_config = config['deployment']
+    app_type = config['application']['type']
+    if app_type == 'python':
+        _install_python_packages(deployment_config)
+    elif app_type == 'javascript':
+        _install_node_packages(deployment_config)
+    else:
+        raise Exception('{0} is not a supported application type'.format(app_type))
+
+
+def _install_python_packages(deployment_config, requirements_file='requirements.txt'):
+    """
+    Will install python requirements using `pip`.
+    """
     pip_binary = os.path.join(deployment_config['base_dir'],
                               deployment_config['venv'], 'bin/pip')
 
-    sudo('{0} install -r requirements.txt'.format(pip_binary),
+    sudo('{0} install -r {1}'.format(pip_binary, requirements_file),
          user=deployment_config['user'])
+
+
+def _install_node_packages(deployment_config):
+    """
+    Installs Node.js packages via `npm`
+    """
+    sudo('npm install', user=deployment_config['user'])

@@ -27,7 +27,8 @@ class InitTestCase(BaseTestCase):
                                                     fake_load_from_tmpl):
         profile_name = '<profile_name>'
         fake_exists.expects_call().returns(False)
-        fake_input.expects_call().returns(profile_name)
+        fake_input.expects_call().returns('python')
+        fake_input.next_call().returns(profile_name)
         FakeSession.expects_call().with_args(profile_name).returns(True)
         fake_load_from_tmpl.expects_call().returns({})
 
@@ -43,7 +44,8 @@ class InitTestCase(BaseTestCase):
                                                             FakeSession):
         profile_name = '<profile_name>'
         fake_exists.expects_call().returns(False)
-        fake_input.expects_call().returns(profile_name)
+        fake_input.expects_call().returns('python')
+        fake_input.next_call().returns(profile_name)
         FakeSession.expects_call().with_args(profile_name).returns(False)
         fake_input.next_call().returns('n')
 
@@ -65,7 +67,8 @@ class InitTestCase(BaseTestCase):
         secret = '<secret>'
 
         fake_path_exists.expects_call().returns(False)
-        fake_input.expects_call().returns(profile_name)
+        fake_input.expects_call().returns('python')
+        fake_input.next_call().returns(profile_name)
         profile_exists.expects_call().with_args(profile_name).returns(False)
         fake_input.next_call().returns('y')
         fake_input.next_call().returns(key)
@@ -92,7 +95,8 @@ class InitTestCase(BaseTestCase):
         secret = '<secret>'
 
         fake_exists.expects_call().returns(False)
-        fake_input.expects_call().returns(profile_name)
+        fake_input.expects_call().returns('python')
+        fake_input.next_call().returns(profile_name)
         fake_profile_exists.expects_call().with_args(profile_name).returns(False)
         fake_input.next_call().returns('y')
         fake_input.next_call().returns(key)

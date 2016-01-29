@@ -1,3 +1,7 @@
+application:
+  type: undefined
+bifrost:
+  version: 0
 connection:
   aws_profile: reservoir
   gateway: True
@@ -10,6 +14,4 @@ deployment:
   venv: venv
   user: www-data
 repository: ''
-roles:
-  web: {tag-key: my-web-tag}
-  worker: {tag-key: my-worker-tag}
+roles: {}

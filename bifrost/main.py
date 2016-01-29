@@ -15,7 +15,7 @@ import argparse
 import subprocess
 from bifrost.aws import AWSProfile
 from bifrost.generators import Config, Fabric
-from bifrost.helpers.console import ConfigBuilder, query_yes_no
+from bifrost.helpers.console import ConfigBuilder, query_yes_no, query_options
 from bifrost.version import __version__
 
 FABRIC_FILE_NAME = 'fabfile.py'
@@ -31,6 +31,8 @@ def init(name):
     if os.path.exists(name):
         print('File already exists, exiting...')
         sys.exit(1)
+
+    app_type = query_options('Type of application', 'python', 'javascript')
 
     profile_name = raw_input('AWS Profile to use: ')
     profile_exists = AWSProfile.exists(profile_name)
@@ -73,7 +75,7 @@ def init(name):
                 config_values[key] = config_values[key][key]
 
     if (config_values):
-        Config.save(name=name, **config_values)
+        Config.save(name=name, application_type=app_type, **config_values)
         if not os.path.exists(FABRIC_FILE_NAME):
             Fabric.save(FABRIC_FILE_NAME,
                         roles=list(config_values['roles'].iterkeys()))
