@@ -20,10 +20,14 @@ def setup(config=None):
 {% for role in roles %}
 @roles('{{role}}')
 def deploy_{{role}}(branch, install_pkgs=False):
+    """ Deploys from `branch` to {{role}}
+    """
     pass
 {% endfor %}
 
 def deploy(branch, install_pkgs=False):
+    """ Deploys from `branch` to all roles
+    """
     {% for role in roles %}
     execute(deploy_{{role}}, branch, install_pkgs=install_pkgs)
     {% endfor %}
