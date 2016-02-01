@@ -22,7 +22,30 @@ def setup(config=None):
 def deploy_{{role}}(branch, install_pkgs=False):
     """ Deploys from `branch` to {{role}}
     """
-    pass
+    # Stop services here...
+    sudo('service myservice stop')
+
+    with cd(env.config['repository']):
+        res = deploy_helpers.checkout_code(branch=branch)
+        if not res:
+            abort('Unable to download code')
+
+    deploy_helpers.backup('{{role}}', env.config['deployment'])
+
+    with cd(env.config['repository']):
+        additional_files = {
+            'requirements.txt': '.'
+        }
+
+        deploy_helpers.copy_code(env.config['deployment'],
+                          source_dir='src',
+                          **additional_files)
+
+    if deploy_helpers.convert_to_bool(install_pkgs):
+        with cd(env.config['repository']):
+            deploy_helpers.install_pkgs(env.config)
+
+    sudo('service myservice start')
 {% endfor %}
 
 def deploy(branch, install_pkgs=False):
