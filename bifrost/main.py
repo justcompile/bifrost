@@ -13,9 +13,11 @@ import sys
 import aaargh
 import argparse
 import subprocess
+
 from bifrost.aws import AWSProfile
 from bifrost.generators import Config, Fabric
-from bifrost.helpers.console import ConfigBuilder, query_yes_no, query_options
+from bifrost.helpers import fab
+from bifrost.helpers.console import print_header, ConfigBuilder, query_yes_no, query_options
 from bifrost.version import __version__
 
 FABRIC_FILE_NAME = 'fabfile.py'
@@ -28,6 +30,7 @@ app.arg('-v', '--version', action='version',
 @app.cmd
 @app.cmd_arg('-n', '--name', default='bifrost.cfg', help='Name of the config file to generate')
 def init(name):
+    print_header()
     if os.path.exists(name):
         print('File already exists, exiting...')
         sys.exit(1)
@@ -87,20 +90,26 @@ def init(name):
 
 @app.cmd
 @app.cmd_arg('-n', '--name', default='bifrost.cfg', help='Name of the config file load')
+@app.cmd_arg('-t', '--tasks', action='store_true', help='List the available tasks')
 @app.cmd_arg('args', nargs=argparse.REMAINDER)
-def deploy(name, args):
-    print("Generating fab deploy command...")
-    cmd = ['fab']
-    cmd.append('setup:config={0}'.format(name))
-
-    if args:
-        cmd.extend(args)
+def deploy(name, tasks, args):
+    print_header()
+    if tasks:
+        fab.display_fabric_tasks()
+        sys.exit(0)
     else:
-        cmd.append('deploy:branch=default')
+        print("Generating fab deploy command...")
+        cmd = ['fab']
+        cmd.append('setup:config={0}'.format(name))
 
-    print('Executing: {0}'.format(' '.join(cmd)))
-    if query_yes_no("Do you want to continue?", default="no"):
-        subprocess.call(cmd)
+        if args:
+            cmd.extend(args)
+        else:
+            cmd.append('deploy:branch=default')
+
+        print('Executing: {0}'.format(' '.join(cmd)))
+        if query_yes_no("Do you want to continue?", default="no"):
+            subprocess.call(cmd)
 
 
 def main():

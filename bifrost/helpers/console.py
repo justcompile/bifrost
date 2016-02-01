@@ -4,6 +4,15 @@ from __future__ import (
 )
 import sys
 
+def print_header():
+    print("""
+     ______  _    ___
+    (____  \(_)  / __)                 _
+     ____)  )_ _| |__ ____ ___   ___ _| |_
+    |  __  (| (_   __) ___) _ \ /___|_   _)
+    | |__)  ) | | | | |  | |_| |___ | | |_
+    |______/|_| |_| |_|   \___/(___/   \__)\n\n""")
+
 class ConfigBuilder(object):
     def __init__(self, key, data):
         self.values = {}
