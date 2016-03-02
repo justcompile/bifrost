@@ -4,7 +4,7 @@
 Bifrost is a command line tool to aid with the deployment of code to AWS instances using the [Fabric](http://www.fabfile.org/) library. Currently in beta.
 
 ## Installation
-`sudo pip install http://github.com/justcompile/bifrost`
+`sudo pip install git+http://github.com/justcompile/bifrost`
 
 ## Usage
 From the top level of your project repository, you can run the following
