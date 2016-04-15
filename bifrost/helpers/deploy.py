@@ -79,6 +79,9 @@ def backup(key, deployment_config):
     deployment_dir = os.path.join(deployment_config['base_dir'],
                                   deployment_config['code_dir'])
 
+    sudo('mkdir -p {0}'.format(deployment_dir))
+    sudo('chown {0}:{0} -R {1}'.format(deployment_config['user'], deployment_dir))
+
     # Ensure this dir actually exists
     sudo('mkdir -p %s' % backup_dir)
 
@@ -184,6 +187,9 @@ def _install_node_packages(deployment_config, **kwargs):
     command = 'npm install'
     if 'home_env' in kwargs:
         command = 'HOME={0} {1}'.format(kwargs['home_env'], command)
+
+        sudo('mkdir -p {0]'.format(kwargs['home_env']))
+        sudo('chown {0}:{0} -R {1}'.format(deployment_config['user'], kwargs['home_env']))
 
     with cd(code_dir):
         sudo(command, user=deployment_config['user'])
