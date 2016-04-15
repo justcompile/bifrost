@@ -36,6 +36,7 @@ def init(name):
         sys.exit(1)
 
     app_type = query_options('Type of application', 'python', 'javascript')
+    dvsc = query_options('Source Control version', 'git', 'hg')
 
     profile_name = raw_input('AWS Profile to use: ')
     profile_exists = AWSProfile.exists(profile_name)
@@ -54,7 +55,7 @@ def init(name):
     config_template = Config.load_from_template()
 
     for key, components in config_template.iteritems():
-        if key in ['bifrost', 'application']:
+        if key in ['bifrost', 'application', 'dvsc']:
             continue
         if key == 'roles':
             print('Roles...')
@@ -79,8 +80,8 @@ def init(name):
             if key == 'repository':
                 config_values[key] = config_values[key][key]
 
-    if (config_values):
-        Config.save(name=name, application_type=app_type, **config_values)
+    if config_values:
+        Config.save(name=name, application_type=app_type, dvsc=dvsc, **config_values)
         if not os.path.exists(FABRIC_FILE_NAME):
             Fabric.save(FABRIC_FILE_NAME,
                         roles=list(config_values['roles'].iterkeys()))

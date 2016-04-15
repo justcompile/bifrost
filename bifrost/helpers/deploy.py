@@ -9,7 +9,9 @@ from datetime import datetime
 import os
 from fabric.api import run, sudo
 from fabric.context_managers import cd
+from six import iteritems
 from bifrost.aws import EC2Service
+from bifrost.helpers import dvcs
 from bifrost.generators import Config
 
 
@@ -18,6 +20,7 @@ def load_config(file_name=None):
     Loads Bifrost configuration file for project
     """
     return Config.load(file_name)
+
 
 def get_ssh_gateway(config):
     """
@@ -46,7 +49,7 @@ def generate_fabric_roles(config):
     aws = EC2Service(profile_name=aws_profile, region=region)
 
     roles = {}
-    for role_name, filters in config['roles'].iteritems():
+    for role_name, filters in iteritems(config['roles']):
         ips = aws.get_instances(instance_attr='private_ip_address',
                                 filter=filters)
 
@@ -89,15 +92,15 @@ def backup(key, deployment_config):
                              deployment_dir))
 
 
-def checkout_code(branch):
+def checkout_code(branch, dvsc_type='hg'):
     """
-    Checks out code base from BitBucket
+    Checks out code base via Mercurial or Git
     """
 
-    run('hg pull -u')
-    result = run('hg update {0}'.format(branch))
+    cls = dvcs.cls_for_dvsc(dvsc_type)
 
-    return result
+    return cls.update_to_branch(branch)
+
 
 def convert_to_bool(val, default=False):
     """
@@ -117,6 +120,7 @@ def convert_to_bool(val, default=False):
     except ValueError:
         return default
 
+
 def copy_code(deployment_config, source_dir='src', delete_dest_contents=True,
               **additional_files):
     """
@@ -130,7 +134,7 @@ def copy_code(deployment_config, source_dir='src', delete_dest_contents=True,
     sudo('cp -r {0}/* {1}'.format(source_dir, deployment_dir),
          user=deployment_config['user'])
 
-    for source, dest in additional_files.iteritems():
+    for source, dest in iteritems(additional_files):
         if dest != '.':
             print('Attempting to copy {0} to {1}'.format(source, dest))
             raise NotImplementedError('Need to implement moving additional '
