@@ -92,16 +92,16 @@ def init(name):
 @app.cmd
 @app.cmd_arg('-n', '--name', default='bifrost.cfg', help='Name of the config file load')
 @app.cmd_arg('-t', '--tasks', action='store_true', help='List the available tasks')
+@app.cmd_arg('--noinput', action='store_true', help='Prevents prompts')
 @app.cmd_arg('args', nargs=argparse.REMAINDER)
-def deploy(name, tasks, args):
+def deploy(name, tasks, noinput, args):
     print_header()
     if tasks:
         fab.display_fabric_tasks()
         sys.exit(0)
     else:
         print("Generating fab deploy command...")
-        cmd = ['fab']
-        cmd.append('setup:config={0}'.format(name))
+        cmd = ['fab', 'setup:config={0}'.format(name)]
 
         if args:
             cmd.extend(args)
@@ -109,7 +109,7 @@ def deploy(name, tasks, args):
             cmd.append('deploy:branch=default')
 
         print('Executing: {0}'.format(' '.join(cmd)))
-        if query_yes_no("Do you want to continue?", default="no"):
+        if noinput or query_yes_no("Do you want to continue?", default="no"):
             subprocess.call(cmd)
 
 
