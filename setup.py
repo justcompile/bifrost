@@ -3,8 +3,6 @@
 
 from __future__ import with_statement
 
-import sys
-
 from setuptools import setup, find_packages
 
 from bifrost.version import get_version
@@ -19,7 +17,7 @@ To find out what's new in this version of Bifrost, please see `the changelog`_.
 %s
 ----
 For more information, please see the Bifrost website or execute ``fab --help``.
-""" % (readme)
+""" % readme
 
 
 with open('requirements.txt') as f:
