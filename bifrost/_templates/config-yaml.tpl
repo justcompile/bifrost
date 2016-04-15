@@ -14,4 +14,5 @@ deployment:
   venv: venv
   user: www-data
 repository: ''
+dvsc: 'git'
 roles: {}

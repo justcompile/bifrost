@@ -26,7 +26,7 @@ def deploy_{{role}}(branch, install_pkgs=False):
     sudo('service myservice stop')
 
     with cd(env.config['repository']):
-        res = deploy_helpers.checkout_code(branch=branch)
+        res = deploy_helpers.checkout_code(branch=branch, dvsc_type=env.config['dvsc']))
         if not res:
             abort('Unable to download code')
 
