@@ -4,3 +4,4 @@ boto3==1.2.3
 PyYAML==3.11
 Jinja2==2.8
 six==1.10.0
+pycrypto==2.6.1
