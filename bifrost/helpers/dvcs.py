@@ -15,10 +15,10 @@ class Git(object):
         return run('git checkout {0}'.format(branch_name))
 
 
-def cls_for_dvsc(dvsc_type):
-    if dvsc_type.lower() == 'git':
+def cls_for_dvcs(dvcs_type):
+    if dvcs_type.lower() == 'git':
         return Git
-    elif dvsc_type.lower() == 'hg':
+    elif dvcs_type.lower() == 'hg':
         return Mercurial
     else:
-        raise NotImplemented('DVSC type: {0} is not recognised'.format(dvsc_type))
+        raise NotImplemented('dvcs type: {0} is not recognised'.format(dvcs_type))
