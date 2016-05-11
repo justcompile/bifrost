@@ -33,7 +33,7 @@ class Config(object):
 
     @staticmethod
     def save(name='bifrost.cfg', application_type='undefined', connection=None,
-             deployment=None, repository=None, roles=None, dvsc='git'):
+             deployment=None, repository=None, roles=None, dvcs='git'):
         """
         Saves a given configuration data to a file in the current directory.
         """
@@ -49,7 +49,7 @@ class Config(object):
         if repository:
             tmpl_data['repository'] = repository
 
-        tmpl_data['dvsc'] = dvsc
+        tmpl_data['dvcs'] = dvcs
 
         tmpl_data['roles'] = roles or {}
         tmpl_data['application']['type'] = application_type
