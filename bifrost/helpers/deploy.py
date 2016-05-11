@@ -95,12 +95,12 @@ def backup(key, deployment_config):
                              deployment_dir))
 
 
-def checkout_code(branch, dvsc_type='hg'):
+def checkout_code(branch, dvcs_type='hg'):
     """
     Checks out code base via Mercurial or Git
     """
 
-    cls = dvcs.cls_for_dvsc(dvsc_type)
+    cls = dvcs.cls_for_dvcs(dvcs_type)
 
     return cls.update_to_branch(branch)
 
