@@ -16,6 +16,7 @@ import subprocess
 
 from bifrost.aws import AWSProfile
 from bifrost.generators import Config, Fabric
+from bifrost.helpers.deploy import load_config
 from bifrost.helpers import fab
 from bifrost.helpers.console import print_header, ConfigBuilder, query_yes_no, query_options
 from bifrost.version import __version__
@@ -106,7 +107,18 @@ def deploy(name, tasks, noinput, args):
         if args:
             cmd.extend(args)
         else:
-            cmd.append('deploy:branch=default')
+            config = load_config(name)
+
+            dvcs_type = config.get('dvcs')
+            if dvcs_type.lower() == 'git':
+                default_branch = 'master'
+            elif dvcs_type.lower() == 'hg':
+                default_branch = 'default'
+            else:
+                print("Unsupported or missing DVCS")
+                sys.exit(1)
+
+            cmd.append('deploy:branch={0}'.format(default_branch))
 
         print('Executing: {0}'.format(' '.join(cmd)))
         if noinput or query_yes_no("Do you want to continue?", default="no"):
